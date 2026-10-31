@@ -38,8 +38,10 @@
 #define CEF_INCLUDE_CEF_CLIENT_H_
 #pragma once
 
+#include "include/cef_api_hash.h"
 #include "include/cef_audio_handler.h"
 #include "include/cef_base.h"
+#include "include/cef_clipboard_handler.h"
 #include "include/cef_command_handler.h"
 #include "include/cef_context_menu_handler.h"
 #include "include/cef_dialog_handler.h"
@@ -198,6 +200,16 @@ class CefClient : public virtual CefBaseRefCounted {
                                         CefRefPtr<CefProcessMessage> message) {
     return false;
   }
+
+#if CEF_API_ADDED(CEF_NEXT)
+  ///
+  /// Return the handler for renderer clipboard operations.
+  ///
+  /*--cef(added=next)--*/
+  virtual CefRefPtr<CefClipboardHandler> GetClipboardHandler() {
+    return nullptr;
+  }
+#endif
 };
 
 #endif  // CEF_INCLUDE_CEF_CLIENT_H_

@@ -4252,6 +4252,36 @@ typedef struct _cef_task_info_t {
   int is_gpu_memory_inflated;
 } cef_task_info_t;
 
+#if CEF_API_ADDED(CEF_NEXT)
+///
+/// Clipboard buffer identifiers used by CefClipboardHandler.
+///
+typedef enum {
+  /// The standard copy/paste clipboard.
+  CEF_CLIPBOARD_BUFFER_STANDARD,
+  /// The primary selection buffer (Linux only).
+  CEF_CLIPBOARD_BUFFER_SELECTION,
+
+  CEF_CLIPBOARD_BUFFER_NUM_VALUES,
+} cef_clipboard_buffer_t;
+
+///
+/// Clipboard data formats used by CefClipboardData. Values can be combined as
+/// a bitmask.
+///
+typedef enum {
+  CEF_CLIPBOARD_FORMAT_NONE = 0,
+  CEF_CLIPBOARD_FORMAT_TEXT = 1 << 0,
+  CEF_CLIPBOARD_FORMAT_HTML = 1 << 1,
+  CEF_CLIPBOARD_FORMAT_RTF = 1 << 2,
+  CEF_CLIPBOARD_FORMAT_SVG = 1 << 3,
+  CEF_CLIPBOARD_FORMAT_IMAGE = 1 << 4,
+  CEF_CLIPBOARD_FORMAT_FILES = 1 << 5,
+  CEF_CLIPBOARD_FORMAT_BOOKMARK = 1 << 6,
+  CEF_CLIPBOARD_FORMAT_CUSTOM_DATA = 1 << 7,
+} cef_clipboard_format_t;
+#endif  // CEF_API_ADDED(CEF_NEXT)
+
 #ifdef __cplusplus
 }
 #endif

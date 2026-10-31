@@ -6,8 +6,11 @@
 
 #include "cef/libcef/browser/browser_host_base.h"
 #include "cef/libcef/browser/browser_info_manager.h"
+#include "cef/libcef/browser/clipboard_host.h"
 #include "cef/libcef/browser/thread_util.h"
+#include "cef/libcef/common/api_version_util.h"
 #include "cef/libcef/common/frame_util.h"
+#include "content/browser/renderer_host/clipboard_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -36,6 +39,28 @@ void CefBrowserFrame::RegisterBrowserInterfaceBindersForFrame(
         // This object is bound to the lifetime of |frame_host| and the mojo
         // connection. See DocumentServiceBase for details.
         new CefBrowserFrame(frame_host, std::move(receiver));
+      }));
+
+  map->Add<blink::mojom::ClipboardHost>(base::BindRepeating(
+      [](content::RenderFrameHost* frame_host,
+         mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver) {
+        auto browser = CefBrowserHostBase::GetBrowserForHost(frame_host);
+        CefRefPtr<CefClipboardHandler> handler;
+        CefRefPtr<CefFrame> frame;
+        if (browser) {
+          frame = browser->GetFrameForHost(frame_host);
+          auto client = browser->GetClient();
+          if (frame && client && CEF_API_IS_ADDED(CEF_NEXT)) {
+            handler = client->GetClipboardHandler();
+          }
+        }
+
+        if (handler) {
+          new CefClipboardHost(*frame_host, std::move(receiver), browser, frame,
+                               handler);
+        } else {
+          content::ClipboardHostImpl::Create(frame_host, std::move(receiver));
+        }
       }));
 }
 
